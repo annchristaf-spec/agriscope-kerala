@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102d25">
+  <title>AgriScope Kerala | Yield & Climate Intelligence</title>
+  <meta name="description" content="Agricultural yield and climate pattern analysis dashboard for Kerala.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">A<span>✳</span></span><span><b>AgriScope</b><small>KERALA INTELLIGENCE</small></span></a>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="nav-link active" href="#overview" data-page="overview"><i>▦</i> Overview</a>
+      <a class="nav-link" href="#crops" data-page="crops"><i>♧</i> Crop analytics</a>
+      <a class="nav-link" href="#climate" data-page="climate"><i>☼</i> Climate patterns</a>
+      <a class="nav-link" href="#districts" data-page="districts"><i>⌖</i> District insights</a>
+      <a class="nav-link" href="#datasets" data-page="datasets"><i>▤</i> Dataset explorer</a>
+      <a class="nav-link" href="#pipeline" data-page="pipeline"><i>⌘</i> Big data pipeline</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="source-card"><span class="pulse"></span><div><b>Data connections</b><small>Weather API available</small></div></div>
+      <div class="side-foot">ACADEMIC PROJECT · 2026<br>Kerala, India</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+      <div class="breadcrumb">Kerala <span>/</span> <b id="crumb">Overview</b></div>
+      <div class="top-actions"><span class="live-pill"><i></i> LIVE WEATHER</span><span class="avatar">AS</span></div>
+    </header>
+
+    <section class="page active" id="page-overview">
+      <div class="hero">
+        <div class="hero-copy"><div class="eyebrow"><span></span> AGRICULTURE DATA INTELLIGENCE</div>
+          <h1>Understand the land.<br><em>Grow the future.</em></h1>
+          <p>Explore how climate patterns influence agricultural production across Kerala — through data, analytics and insight.</p>
+          <div class="hero-meta"><span>⌖ Kerala, India</span><span>◷ Updated dashboard · 2026</span></div>
+        </div>
+        <div class="hero-art"><div class="sun"></div><div class="hill hill-back"></div><div class="hill hill-front"></div><div class="plant plant-one">♧</div><div class="plant plant-two">♧</div><div class="art-caption">DATA FOR<br><b>SUSTAINABLE<br>AGRICULTURE</b></div></div>
+      </div>
+
+      <div class="section-heading"><div><div class="eyebrow">AT A GLANCE</div><h2>Kerala agriculture overview</h2><p class="muted">A snapshot of the agricultural landscape</p></div><div class="filters"><select id="yearFilter" aria-label="Select year"><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option></select><select id="districtFilter" aria-label="Select district"><option value="All">All districts</option></select></div></div>
+
+      <div class="stats-grid">
+        <article class="stat-card"><div class="stat-top"><span class="stat-icon green">♧</span><span class="trend up">↗ 4.8%</span></div><div class="stat-number" data-count="21.4">0</div><div class="stat-label">Agricultural area <small>lakh hectares · illustrative</small></div><div class="mini-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article>
+        <article class="stat-card"><div class="stat-top"><span class="stat-icon gold">▥</span><span class="trend up">↗ 2.3%</span></div><div class="stat-number" data-count="6.82">0</div><div class="stat-label">Crop production <small>million tonnes · illustrative</small></div><div class="mini-bars gold-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article>
+        <article class="stat-card"><div class="stat-top"><span class="stat-icon blue">☂</span><span class="trend down">↘ 1.2%</span></div><div class="stat-number" data-count="2890">0</div><div class="stat-label">Annual rainfall <small>mm · sample estimate</small></div><div class="mini-bars blue-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article>
+        <article class="stat-card"><div class="stat-top"><span class="stat-icon orange">♨</span><span class="trend neutral">● Normal</span></div><div class="stat-number" data-count="28.6">0</div><div class="stat-label">Mean temperature <small>°C · sample estimate</small></div><div class="mini-bars orange-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article>
+      </div>
+      <div class="content-grid">
+        <article class="panel chart-panel"><div class="panel-head"><div><span class="eyebrow">PRODUCTION TRENDS</span><h3>Crop production over time</h3><p class="muted">Illustrative sample dataset · million tonnes</p></div><select id="cropTrendSelect"><option value="All">All major crops</option><option value="Rice">Rice</option><option value="Coconut">Coconut</option><option value="Rubber">Rubber</option><option value="Banana">Banana</option></select></div><div class="chart-wrap"><canvas id="productionChart"></canvas></div><div class="chart-foot"><span><i class="legend-dot"></i> Production trend</span><span>2019 — 2025</span></div></article>
+        <article class="panel climate-card"><div class="panel-head"><div><span class="eyebrow">CLIMATE MONITOR</span><h3>Weather snapshot</h3></div><span class="weather-symbol">☀</span></div><div class="weather-location">Thiruvananthapuram, Kerala</div><div class="weather-main"><strong id="weatherTemp">--°</strong><span id="weatherDesc">Fetching live weather…</span></div><div class="weather-details"><div><span>Humidity</span><b id="weatherHumidity">--%</b></div><div><span>Wind speed</span><b id="weatherWind">-- km/h</b></div><div><span>Updated</span><b id="weatherUpdated">Waiting</b></div></div><p class="api-note" id="weatherNote">Live values load from Open-Meteo when online. Sample fallback is shown if unavailable.</p></article>
+      </div>
+      <div class="content-grid lower-grid">
+        <article class="panel"><div class="panel-head"><div><span class="eyebrow">CROP DISTRIBUTION</span><h3>Production share by crop</h3></div><span class="subtle-tag">Sample data</span></div><div class="donut-area"><div class="donut-wrap"><canvas id="cropShareChart"></canvas><div class="donut-center"><b>6.82</b><small>MT TOTAL</small></div></div><div class="legend-list" id="cropLegend"></div></div></article>
+        <article class="panel insight-panel"><div class="panel-head"><div><span class="eyebrow">DATA-DRIVEN OBSERVATIONS</span><h3>Insights to explore</h3></div><span class="sparkle">✳</span></div><div class="insight"><span class="insight-no">01</span><div><b>Monsoon matters</b><p>Rainfall timing and distribution can influence paddy cultivation and seasonal yield.</p></div></div><div class="insight"><span class="insight-no">02</span><div><b>Crop diversity</b><p>Kerala's crop mix includes food crops, plantation crops and horticultural produce.</p></div></div><div class="insight"><span class="insight-no">03</span><div><b>District differences</b><p>Soil, terrain, irrigation and local weather create different agricultural conditions.</p></div></div></article>
+      </div>
+    </section>
+
+    <section class="page" id="page-crops">
+      <div class="page-title"><div class="eyebrow">PRODUCTION INTELLIGENCE</div><h1>Crop <em>analytics</em></h1><p>Explore crop-wise production patterns and compare agricultural performance.</p></div>
+      <div class="toolbar"><div class="searchbox">⌕ <input id="cropSearch" placeholder="Search crop…" /></div><select id="cropDistrict"><option value="All">All districts</option></select><select id="cropYear"><option>2025</option><option>2024</option><option>2023</option><option>2022</option></select></div>
+      <div class="crop-grid" id="cropCards"></div>
+      <article class="panel wide-panel"><div class="panel-head"><div><span class="eyebrow">COMPARATIVE VIEW</span><h3>Crop production comparison</h3><p class="muted">Illustrative values · million tonnes</p></div></div><div class="chart-wrap tall"><canvas id="cropCompareChart"></canvas></div></article>
+    </section>
+
+    <section class="page" id="page-climate">
+      <div class="page-title"><div class="eyebrow">WEATHER & ENVIRONMENT</div><h1>Climate <em>patterns</em></h1><p>Study rainfall and temperature patterns relevant to agricultural planning.</p></div>
+      <div class="climate-banner"><div><span class="eyebrow">LIVE WEATHER LOCATION</span><h2>Thiruvananthapuram</h2><p>Kerala · India · Open-Meteo weather service</p></div><div class="big-weather"><span>☀</span><b id="climateTemp">--°C</b><small id="climateCondition">Loading conditions</small></div></div>
+      <div class="stats-grid climate-stats"><article class="stat-card"><span class="stat-icon blue">☂</span><div class="stat-number">2,890 <small>mm</small></div><div class="stat-label">Sample annual rainfall</div></article><article class="stat-card"><span class="stat-icon orange">♨</span><div class="stat-number">28.6 <small>°C</small></div><div class="stat-label">Sample mean temperature</div></article><article class="stat-card"><span class="stat-icon green">◉</span><div class="stat-number">78 <small>%</small></div><div class="stat-label">Sample mean humidity</div></article></div>
+      <div class="content-grid"><article class="panel"><div class="panel-head"><div><span class="eyebrow">SEASONAL RAINFALL</span><h3>Monthly rainfall pattern</h3><p class="muted">Illustrative climatology · mm</p></div></div><div class="chart-wrap"><canvas id="rainChart"></canvas></div></article><article class="panel"><div class="panel-head"><div><span class="eyebrow">TEMPERATURE</span><h3>Monthly temperature</h3><p class="muted">Illustrative mean · °C</p></div></div><div class="chart-wrap"><canvas id="tempChart"></canvas></div></article></div>
+      <p class="disclaimer">Climate charts on this page are illustrative teaching data, not official observations. Live weather card uses the Open-Meteo API. See README for data-source details.</p>
+    </section>
+
+    <section class="page" id="page-districts">
+      <div class="page-title"><div class="eyebrow">REGIONAL COMPARISON</div><h1>District <em>insights</em></h1><p>Compare sample agricultural indicators across Kerala's districts.</p></div>
+      <div class="toolbar"><div class="searchbox">⌕ <input id="districtSearch" placeholder="Search district…" /></div><select id="districtMetric"><option value="yield">Crop yield index</option><option value="rainfall">Rainfall</option><option value="area">Cultivated area</option></select></div>
+      <article class="panel"><div class="panel-head"><div><span class="eyebrow">DISTRICT PERFORMANCE</span><h3 id="districtChartTitle">Crop yield index by district</h3><p class="muted">Illustrative index values · not official statistics</p></div></div><div class="chart-wrap tall"><canvas id="districtChart"></canvas></div></article>
+      <div class="table-wrap panel"><div class="panel-head"><div><span class="eyebrow">DISTRICT DATA TABLE</span><h3>Regional indicators</h3></div><button class="btn btn-light" id="districtCsv">↓ Export CSV</button></div><div class="table-scroll"><table><thead><tr><th>District</th><th>Yield index</th><th>Rainfall (mm)</th><th>Cultivated area (ha)</th></tr></thead><tbody id="districtRows"></tbody></table></div></div>
+    </section>
+
+    <section class="page" id="page-datasets">
+      <div class="page-title"><div class="eyebrow">OPEN DATA WORKSPACE</div><h1>Dataset <em>explorer</em></h1><p>Search, filter and download the datasets used in this demonstration dashboard.</p></div>
+      <div class="dataset-summary"><div><b id="datasetCount">6</b><span>Available datasets</span></div><div><b>CSV</b><span>Download format</span></div><div><b>Open</b><span>Academic demo access</span></div></div>
+      <div class="toolbar"><div class="searchbox">⌕ <input id="datasetSearch" placeholder="Search datasets…" /></div><select id="datasetCategory"><option value="All">All categories</option><option>Agriculture</option><option>Climate</option><option>Regional</option></select></div>
+      <div class="dataset-list" id="datasetList"></div>
+      <div class="source-note"><b>Data integrity note</b><p>Sample crop and district values are included to demonstrate the analytics workflow. Replace them with verified datasets from Kerala's official data portal or government departments before presenting results as factual findings.</p><a href="https://datahub.kerala.gov.in/sector/agriculture" target="_blank" rel="noopener">Visit Kerala Data Portal ↗</a></div>
+    </section>
+
+    <section class="page" id="page-pipeline">
+      <div class="page-title"><div class="eyebrow">UNDER THE HOOD</div><h1>Big data <em>pipeline</em></h1><p>How raw agricultural and climate data becomes meaningful insight.</p></div>
+      <div class="pipeline">
+        <div class="pipe-step"><span>01</span><div class="pipe-icon">⇩</div><h3>Data collection</h3><p>Kerala open datasets, weather API, crop statistics and district records.</p><small>CSV · JSON · API</small></div><div class="pipe-arrow">→</div>
+        <div class="pipe-step"><span>02</span><div class="pipe-icon">▤</div><h3>Data ingestion</h3><p>Collect, validate and combine data from multiple sources.</p><small>Python · REST API</small></div><div class="pipe-arrow">→</div>
+        <div class="pipe-step"><span>03</span><div class="pipe-icon">▦</div><h3>Storage</h3><p>Store structured and semi-structured datasets for scalable access.</p><small>HDFS · Hive</small></div><div class="pipe-arrow">→</div>
+        <div class="pipe-step"><span>04</span><div class="pipe-icon">⌁</div><h3>Processing</h3><p>Clean, transform, aggregate and analyze historical patterns.</p><small>MapReduce · Spark</small></div><div class="pipe-arrow">→</div>
+        <div class="pipe-step"><span>05</span><div class="pipe-icon">◒</div><h3>Visualization</h3><p>Present trends, comparisons and insights in an interactive dashboard.</p><small>JavaScript · Charts</small></div>
+      </div>
+      <div class="content-grid pipeline-bottom"><article class="panel"><span class="eyebrow">BIG DATA CHARACTERISTICS</span><h3>The 5 Vs</h3><div class="fivev"><div><b>Volume</b><p>Large historical crop and weather records.</p></div><div><b>Velocity</b><p>Continuous updates from weather services.</p></div><div><b>Variety</b><p>CSV, JSON, tabular and time-series data.</p></div><div><b>Veracity</b><p>Validation and source verification.</p></div><div><b>Value</b><p>Insights for better agricultural decisions.</p></div></div></article><article class="panel"><span class="eyebrow">PROJECT OBJECTIVE</span><h3>From data to decisions</h3><p class="muted">The system aims to identify relationships between climate conditions and crop performance, compare regional differences and communicate results through clear visual analytics.</p><div class="objective-tags"><span>Trend analysis</span><span>Correlation</span><span>Regional comparison</span><span>Decision support</span></div></article></div>
+    </section>
+
+    <footer><span>© 2026 AgriScope Kerala · Academic project demonstration</span><span>Built for learning with open data <b>✳</b></span></footer>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body></html>

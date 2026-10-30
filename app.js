@@ -1,0 +1,62 @@
+// AgriScope Kerala — front-end academic demonstration.
+// Replace SAMPLE_* arrays with verified official datasets before reporting findings.
+const districts = ["Thiruvananthapuram","Kollam","Pathanamthitta","Alappuzha","Kottayam","Idukki","Ernakulam","Thrissur","Palakkad","Malappuram","Kozhikode","Wayanad","Kannur","Kasaragod"];
+const districtData = districts.map((name,i)=>({name,yield:[72,78,74,86,91,88,82,89,95,80,83,92,79,76][i],rainfall:[1850,2400,3100,2850,3200,3600,2900,2750,2200,2600,2950,3300,3050,3400][i],area:[41000,38000,26000,52000,47000,39000,43000,56000,71000,62000,49000,35000,44000,27000][i]}));
+const crops = [
+ {name:"Rice",emoji:"🌾",value:1.12,unit:"million tonnes",change:"+3.2%",district:"Palakkad",type:"Food crop",series:[1.01,1.04,1.02,1.07,1.09,1.08,1.12]},
+ {name:"Coconut",emoji:"🥥",value:4.85,unit:"billion nuts",change:"+1.8%",district:"Kozhikode",type:"Plantation",series:[4.45,4.52,4.61,4.58,4.72,4.76,4.85]},
+ {name:"Rubber",emoji:"🌳",value:0.62,unit:"million tonnes",change:"+0.9%",district:"Kottayam",type:"Plantation",series:[.58,.57,.59,.60,.60,.615,.62]},
+ {name:"Banana",emoji:"🍌",value:.91,unit:"million tonnes",change:"+4.1%",district:"Wayanad",type:"Horticulture",series:[.76,.79,.82,.84,.85,.875,.91]},
+ {name:"Pepper",emoji:"🌿",value:.04,unit:"million tonnes",change:"−0.6%",district:"Idukki",type:"Spice",series:[.043,.044,.042,.041,.042,.041,.04]},
+ {name:"Tapioca",emoji:"🍠",value:.72,unit:"million tonnes",change:"+1.1%",district:"Thiruvananthapuram",type:"Food crop",series:[.68,.69,.70,.69,.71,.712,.72]}
+];
+const years=["2019","2020","2021","2022","2023","2024","2025"];
+const production={All:[5.1,5.2,5.25,5.3,5.48,5.56,5.72],Rice:crops[0].series,Coconut:crops[1].series,Rubber:crops[2].series,Banana:crops[3].series};
+const rainfall=[20,25,45,180,310,620,690,420,260,190,90,40];
+const temperature=[27.1,28.2,29.4,29.8,28.7,27.4,26.8,26.9,27.2,27.1,27.0,26.8];
+const palette=["#5c9369","#d6b16b","#83a9b9","#d58f67","#9b8bb5","#93a78c"];
+const datasetRecords=[
+ {name:"Crop production trends (2019–2025)",cat:"Agriculture",desc:"Annual illustrative production values for selected crops.",file:"crop_production.csv",rows:42},
+ {name:"Kerala district indicators",cat:"Regional",desc:"Sample district yield index, rainfall and cultivated area.",file:"district_indicators.csv",rows:14},
+ {name:"Monthly rainfall pattern",cat:"Climate",desc:"Illustrative monthly rainfall climatology for Kerala.",file:"monthly_rainfall.csv",rows:12},
+ {name:"Monthly temperature pattern",cat:"Climate",desc:"Illustrative monthly mean temperature values.",file:"monthly_temperature.csv",rows:12},
+ {name:"Crop profile catalogue",cat:"Agriculture",desc:"Crop category, unit, sample value and leading district.",file:"crop_profiles.csv",rows:6},
+ {name:"Weather API observations",cat:"Climate",desc:"Live weather snapshot retrieved in the browser from Open-Meteo.",file:null,rows:"Live"}
+];
+const $=id=>document.getElementById(id);
+let charts={};
+function chart(id,config){if(charts[id])charts[id].destroy();const el=$(id);if(el&&window.Chart)charts[id]=new Chart(el,config);}
+const baseOptions={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:"#173d30",padding:10,titleFont:{family:"DM Sans"},bodyFont:{family:"DM Sans"}}},scales:{x:{grid:{display:false},ticks:{color:"#94a097",font:{size:9}}},y:{grid:{color:"#eef1ed"},ticks:{color:"#94a097",font:{size:9}}}}};
+function lineConfig(labels,data,label="Value",color="#5c9369"){return {type:"line",data:{labels,datasets:[{label,data,borderColor:color,backgroundColor:color+"20",fill:true,tension:.38,borderWidth:2.5,pointRadius:3,pointBackgroundColor:color}]},options:baseOptions};}
+function barConfig(labels,data,label="Value",color="#75a17a"){return {type:"bar",data:{labels,datasets:[{label,data,backgroundColor:labels.map((_,i)=>palette[i%palette.length]),borderRadius:5,maxBarThickness:30}]},options:baseOptions};}
+function initCharts(){
+ chart("productionChart",lineConfig(years,production.All,"Production"));
+ chart("cropShareChart",{type:"doughnut",data:{labels:crops.map(c=>c.name),datasets:[{data:[1.12,1.75,.62,.91,.04,.72],backgroundColor:palette,borderWidth:3,borderColor:"#fff",hoverOffset:5}]},options:{responsive:true,maintainAspectRatio:false,cutout:"72%",plugins:{legend:{display:false}}}});
+ $("cropLegend").innerHTML=crops.map((c,i)=>`<div class="legend-row"><span style="--c:${palette[i]}">${c.name}</span><b>${[22,34,12,18,1,13][i]}%</b></div>`).join("");
+ chart("rainChart",barConfig(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],rainfall,"Rainfall","#83a9b9"));
+ chart("tempChart",lineConfig(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],temperature,"Temperature","#d49b5d"));
+ chart("cropCompareChart",barConfig(crops.map(c=>c.name),crops.map(c=>c.value),"Sample production"));
+ renderDistrictChart();
+}
+function renderDistrictChart(){const metric=$("districtMetric")?.value||"yield";const labels=districtData.map(d=>d.name);const vals=districtData.map(d=>d[metric]);$("districtChartTitle").textContent=({yield:"Crop yield index by district",rainfall:"Rainfall by district",area:"Cultivated area by district"})[metric];chart("districtChart",barConfig(labels,vals,metric));}
+function populateDistricts(){["districtFilter","cropDistrict"].forEach(id=>{const el=$(id);if(el)el.innerHTML='<option value="All">All districts</option>'+districts.map(d=>`<option>${d}</option>`).join("");});}
+function renderCrops(){const q=($("cropSearch")?.value||"").toLowerCase(),d=$("cropDistrict")?.value||"All";const list=crops.filter(c=>c.name.toLowerCase().includes(q)&&(d==="All"||c.district===d));$("cropCards").innerHTML=list.map(c=>`<article class="crop-card"><div class="crop-card-top"><div class="crop-emoji">${c.emoji}</div><span class="trend up">${c.change}</span></div><h3>${c.name}</h3><p>${c.type} · Leading district: ${c.district}</p><div class="crop-value">${c.value} <small>${c.unit}</small></div><div class="crop-card-foot"><span>2019–2025 trend</span><span>↗ View analysis</span></div></article>`).join("")||'<div class="panel">No matching crops found.</div>';}
+function renderDistricts(){const q=($("districtSearch")?.value||"").toLowerCase();$("districtRows").innerHTML=districtData.filter(d=>d.name.toLowerCase().includes(q)).map(d=>`<tr><td><b>${d.name}</b></td><td>${d.yield}</td><td>${d.rainfall.toLocaleString()}</td><td>${d.area.toLocaleString()}</td></tr>`).join("");}
+function renderDatasets(){const q=($("datasetSearch")?.value||"").toLowerCase(),cat=$("datasetCategory")?.value||"All";const rows=datasetRecords.filter(d=>(d.name+d.desc).toLowerCase().includes(q)&&(cat==="All"||d.cat===cat));$("datasetCount").textContent=rows.length;$("datasetList").innerHTML=rows.map((d,i)=>`<div class="dataset-item"><div class="file-icon">▤</div><div class="dataset-info"><b>${d.name}</b><small>${d.cat} · ${d.rows} records · ${d.desc}</small></div><button data-file="${d.file||""}" data-index="${datasetRecords.indexOf(d)}">${d.file?"↓ CSV":"API info"}</button></div>`).join("")||'<div class="panel">No datasets match your search.</div>';}
+function csvDownload(name,rows){const csv=rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(",")).join("\n");const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);toast("CSV download started");}
+function datasetRows(index){switch(index){case 0:return [["Crop","Year","Production","Unit"],...crops.flatMap(c=>c.series.map((v,i)=>[c.name,years[i],v,c.unit]))];case 1:return [["District","Yield index","Rainfall mm","Cultivated area ha"],...districtData.map(d=>[d.name,d.yield,d.rainfall,d.area])];case 2:return [["Month","Rainfall mm"],...rainfall.map((v,i)=>[new Date(2026,i,1).toLocaleString("en",{month:"long"}),v])];case 3:return [["Month","Mean temperature C"],...temperature.map((v,i)=>[new Date(2026,i,1).toLocaleString("en",{month:"long"}),v])];case 4:return [["Crop","Category","Sample value","Unit","Leading district"],...crops.map(c=>[c.name,c.type,c.value,c.unit,c.district])];default:return [["Status","Detail"],["Live weather","Fetched directly from Open-Meteo in the browser"]];}}
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400);}
+function navigate(page){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$("page-"+page)?.classList.add("active");document.querySelectorAll(".nav-link").forEach(a=>a.classList.toggle("active",a.dataset.page===page));$("crumb").textContent=({overview:"Overview",crops:"Crop analytics",climate:"Climate patterns",districts:"District insights",datasets:"Dataset explorer",pipeline:"Big data pipeline"})[page]||"Overview";$("sidebar").classList.remove("open");window.scrollTo({top:0,behavior:"smooth"});if(page==="districts")renderDistricts();if(page==="crops")renderCrops();if(page==="datasets")renderDatasets();}
+document.querySelectorAll(".nav-link").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();navigate(a.dataset.page);history.replaceState(null,"","#"+a.dataset.page);}));
+$("menuBtn").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
+$("cropTrendSelect").addEventListener("change",e=>chart("productionChart",lineConfig(years,production[e.target.value]||production.All)));
+["cropSearch","cropDistrict","cropYear"].forEach(id=>$(id).addEventListener("input",renderCrops));
+["districtSearch","districtMetric"].forEach(id=>$(id).addEventListener("input",()=>{renderDistricts();renderDistrictChart();}));
+["datasetSearch","datasetCategory"].forEach(id=>$(id).addEventListener("input",renderDatasets));
+$("datasetList").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const i=Number(b.dataset.index);if(!b.dataset.file){toast("Live weather is fetched from Open-Meteo when online.");return;}csvDownload(datasetRecords[i].file,datasetRows(i));});
+$("districtCsv").addEventListener("click",()=>csvDownload("kerala_district_indicators.csv",[["District","Yield index","Rainfall mm","Cultivated area ha"],...districtData.map(d=>[d.name,d.yield,d.rainfall,d.area])]));
+$("yearFilter").addEventListener("change",e=>toast("Showing "+e.target.value+" dashboard view (sample indicators)"));
+$("districtFilter").addEventListener("change",e=>toast(e.target.value==="All"?"Showing all districts":"District filter: "+e.target.value));
+function animateCounters(){document.querySelectorAll("[data-count]").forEach(el=>{const target=Number(el.dataset.count),dec=String(target).includes(".")?1:0,start=performance.now(),duration=1100;function tick(now){const p=Math.min(1,(now-start)/duration);el.textContent=(target*(1-Math.pow(1-p,3))).toFixed(dec);if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);});}
+async function loadWeather(){const url="https://api.open-meteo.com/v1/forecast?latitude=8.5241&longitude=76.9366&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FKolkata";try{const res=await fetch(url);if(!res.ok)throw Error("Weather service unavailable");const data=await res.json(),c=data.current;const code=c.weather_code;const desc=code===0?"Clear sky":code<=3?"Partly cloudy":code<=48?"Foggy":code<=67?"Rain showers":code<=77?"Snow":code<=82?"Rain showers":code<=99?"Thunderstorm":"Current conditions";$("weatherTemp").textContent=Math.round(c.temperature_2m)+"°";$("weatherDesc").textContent=desc;$("weatherHumidity").textContent=c.relative_humidity_2m+"%";$("weatherWind").textContent=c.wind_speed_10m+" km/h";$("weatherUpdated").textContent="Live";$("climateTemp").textContent=c.temperature_2m.toFixed(1)+"°C";$("climateCondition").textContent=desc;$("weatherNote").textContent="Live weather from Open-Meteo · "+c.time.replace("T"," ");}catch(err){$("weatherTemp").textContent="29°";$("weatherDesc").textContent="Sample fallback";$("weatherHumidity").textContent="78%";$("weatherWind").textContent="8 km/h";$("weatherUpdated").textContent="Offline";$("climateTemp").textContent="29.0°C";$("climateCondition").textContent="Sample fallback";$("weatherNote").textContent="Could not reach Open-Meteo. Showing sample values; check your internet connection.";}}
+populateDistricts();initCharts();renderCrops();renderDistricts();renderDatasets();animateCounters();loadWeather();
